@@ -67,8 +67,18 @@ def initdb(drop):
     db.create_all()
     click.echo('Initialized database.')
 
+@app.context_processor
+def inject_user():
+    """ 函数名可以随意修改 """
+    user = User.query.first()
+    return dict(user=user)  # 需要返回字典，等同于return {'user': user}
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('errors/404.html'), 404
+
 @app.route('/')
 def index():
-    user = User.query.first()
     movies = Movie.query.all()
-    return render_template('index.html', user=user, movies=movies)
+    return render_template('index.html', movies=movies)
+
